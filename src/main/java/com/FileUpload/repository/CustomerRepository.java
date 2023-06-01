@@ -6,4 +6,5 @@ import com.FileUpload.models.Customer;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+
 }

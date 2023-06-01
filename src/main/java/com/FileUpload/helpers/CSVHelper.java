@@ -1,5 +1,6 @@
 package com.FileUpload.helpers;
 
+import com.FileUpload.constants.Details;
 import com.FileUpload.models.Customer;
 import com.FileUpload.repository.CustomerRepository;
 import org.apache.commons.csv.CSVFormat;
@@ -15,11 +16,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CSVHelper {
     public String TYPE = "text/csv";
 
+    @Autowired
+    private AES aes256Helper;
     @Autowired
     private CustomerRepository customerRepository;
 
@@ -40,17 +44,51 @@ public class CSVHelper {
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
             for (CSVRecord csvRecord : csvRecords) {
-                Customer customer = new Customer(
-                        Long.parseLong(csvRecord.get("id")),
-                        csvRecord.get("name"),
-                        csvRecord.get("contactNumbers"),
-                        csvRecord.get("contactAddress")
-                );
-                customersList.add(customer);
+                Integer customerId =  Integer.parseInt(csvRecord.get("id"));
+                String customerName = csvRecord.get("name");
+                String contactNumbers = csvRecord.get("contactNumbers");
+                String contactAddress = csvRecord.get("contactAddress");
+                Optional<Customer> tempCustomer = customerRepository.findById(Long.valueOf(customerId.longValue()));
+                String encryptedContactNumber = "";
+                Integer previousContactCount = 1;
+                try {
+                    if (tempCustomer.isPresent()==false) {
+                        System.out.println("New");
+                        encryptedContactNumber = aes256Helper.encrypt(contactNumbers, Details.SECRET_KEY.getValue());
+                        Customer customer = new Customer(
+                                customerId,
+                                customerName,
+                                encryptedContactNumber,
+                                contactAddress,
+                                previousContactCount
+                        );
+                        customerRepository.save(customer);
+                    } else {
+                        String previousContactNumbers = tempCustomer.get().getCustomerContact();
+                        previousContactCount = tempCustomer.get().getDistinctNumbers();
+                        previousContactNumbers = aes256Helper.decrypt(previousContactNumbers,Details.SECRET_KEY.getValue());
+
+                        encryptedContactNumber = aes256Helper.encrypt(
+                                contactNumbers.concat(",").concat(previousContactNumbers)
+                                ,Details.SECRET_KEY.getValue());
+
+                        Customer customer = new Customer(
+                                customerId,
+                                customerName,
+                                encryptedContactNumber,
+                                contactAddress,
+                                previousContactCount + 1
+                        );
+
+                        customerRepository.deleteById(Long.valueOf(customerId.longValue()));
+                        customerRepository.save(customer);
+
+                    }
+                }
+                catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
             }
-
-            customerRepository.saveAll(customersList);
-
             return customersList;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse CSV file: " + e.getMessage());

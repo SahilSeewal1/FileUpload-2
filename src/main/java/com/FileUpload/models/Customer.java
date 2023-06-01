@@ -14,14 +14,17 @@ public @Data @NoArgsConstructor @AllArgsConstructor class Customer {
 
     @Id
     @Column(name = "id")
-    private long id;
+    public Integer customerId;
 
     @Column(name = "name")
-    private String name;
+    public String customerName;
 
     @Column(name = "contactNumbers")
-    private String contactNumbers;
+    public String customerContact;
 
     @Column(name = "contactAddress")
-    private String contactAddress;
+    public String customerAddress;
+
+    @Column(name= "distinctNumbers" )
+    public Integer distinctNumbers;
 }
