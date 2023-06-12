@@ -11,9 +11,9 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 @Configuration
 public class AES {
-    private static SecretKeySpec secretKey;
-    private static byte[] key;
-    public static void setKey( String myKey) {
+    private SecretKeySpec secretKey;
+    private byte[] key;
+    public void setKey( String myKey) {
         MessageDigest sha = null;
         try {
             key = myKey.getBytes("UTF-8");
@@ -25,7 +25,7 @@ public class AES {
             e.printStackTrace();
         }
     }
-    public static String encrypt( String strToEncrypt,  String secret) {
+    public String encrypt( String strToEncrypt,  String secret) {
         try {
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
@@ -37,7 +37,7 @@ public class AES {
           }
         return null;
     }
-    public static String decrypt( String strToDecrypt,  String secret) {
+    public String decrypt( String strToDecrypt,  String secret) {
         try {
             setKey(secret);
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");

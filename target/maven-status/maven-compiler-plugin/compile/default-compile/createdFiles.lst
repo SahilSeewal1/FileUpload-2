@@ -1,8 +1,6 @@
-com/FileUpload/utilities/CustomerUtility.class
 com/FileUpload/routes/fileUpload.class
 com/FileUpload/exceptions/FileUploadException.class
 com/FileUpload/models/CustomerResponse.class
-com/FileUpload/helpers/CSVHelper.class
 com/FileUpload/repository/CustomerRepository.class
 com/FileUpload/models/CustomerResponse$CustomerResponseBuilder.class
 com/FileUpload/helpers/AES.class
@@ -12,3 +10,4 @@ com/FileUpload/FileUploadApplication.class
 com/FileUpload/models/Customer.class
 com/FileUpload/models/ResponseMessage.class
 com/FileUpload/routes/getCustomerDetails.class
+com/FileUpload/helpers/ExcelHelper.class

@@ -5,17 +5,13 @@ import com.FileUpload.models.Customer;
 import com.FileUpload.models.CustomerResponse;
 import com.FileUpload.models.ResponseMessage;
 import com.FileUpload.repository.CustomerRepository;
-import com.FileUpload.utilities.CustomerUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.FileUpload.constants.Details;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 @RestController
 @CrossOrigin
@@ -27,9 +23,6 @@ public class getCustomerDetails {
     @Autowired
     AES aesHelper;
 
-    @Autowired
-    CustomerUtility customerUtility;
-
     @GetMapping(value="/getCustomerDetails")
     public ResponseEntity getCustomerDetailsById(@RequestParam("Id") Integer customerId) {
 
@@ -40,13 +33,11 @@ public class getCustomerDetails {
             String message = "User Not Found";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
        }
-        String[] Contacts = customerUtility.handleCustomerContacts(aesHelper, customerData);
-
         return ResponseEntity.status(HttpStatus.OK).body(
                 CustomerResponse.builder()
                 .customerId(customerData.get().customerId)
                 .customerName(customerData.get().customerName)
-                .customerContact(Contacts)
+                .customerContact(customerData.get().customerContact.split(" "))
                 .customerAddress(customerData.get().customerAddress)
                 .distinctNumbers(customerData.get().distinctNumbers)
                 .build());
@@ -64,12 +55,11 @@ public class getCustomerDetails {
         List<CustomerResponse> customerContactList = new ArrayList<>();
 
         for(Customer customerData: customerDataList) {
-            String[] Contacts = customerUtility.handleCustomerContacts(aesHelper, Optional.of(customerData));
 
             customerContactList.add(CustomerResponse.builder()
                     .customerId(customerData.customerId)
                     .customerName(customerData.customerName)
-                    .customerContact(Contacts)
+                    .customerContact(customerData.customerContact.split(" "))
                     .customerAddress(customerData.customerAddress)
                     .distinctNumbers(customerData.distinctNumbers)
                     .build());
@@ -89,12 +79,6 @@ public class getCustomerDetails {
             message = "User Not Found";
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
         }
-        String encryptedContacts = aesHelper.decrypt(customerData.get().customerContact,Details.SECRET_KEY.getValue());
-        Contacts = encryptedContacts.split("[,]",0);
-
-        for (int i =0;i<Contacts.length;i++) {
-            Contacts[i] = aesHelper.encrypt(Contacts[i],Details.SECRET_KEY.getValue());
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(Contacts);
+        return ResponseEntity.status(HttpStatus.OK).body(customerData.get().customerContact.split(" "));
     }
 }
