@@ -1,6 +1,5 @@
 package com.FileUpload.routes;
 
-import com.FileUpload.helpers.AES;
 import com.FileUpload.models.Customer;
 import com.FileUpload.models.CustomerResponse;
 import com.FileUpload.models.ResponseMessage;
@@ -15,13 +14,10 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api")
+@RequestMapping("/api/customer")
 public class getCustomerDetails {
     @Autowired
     CustomerRepository customerRepository;
-
-    @Autowired
-    AES aesHelper;
 
     @GetMapping(value="/getCustomerDetails")
     public ResponseEntity getCustomerDetailsById(@RequestParam("Id") Integer customerId) {

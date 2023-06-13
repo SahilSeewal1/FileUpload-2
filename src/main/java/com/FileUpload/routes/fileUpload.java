@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/api/csv")
+@RequestMapping("/api/excel")
 public class fileUpload {
 
     @Autowired
@@ -39,7 +39,7 @@ public class fileUpload {
             }
         }
 
-        message = "Please upload a csv file!";
+        message = "Please upload a excel file (.xlsx)!";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseMessage(message));
     }
 
